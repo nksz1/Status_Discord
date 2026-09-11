@@ -5,5 +5,4 @@ dist/
 .env.local
 data.db
 data.json
-public/Elaina.mp4
 .agents/
