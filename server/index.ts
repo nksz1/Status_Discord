@@ -534,6 +534,10 @@ app.get('/api/status', enforcePublicStatusRateLimit, (req, res) => {
   }
 });
 
+app.all('/api/*', (req, res) => {
+  res.status(404).json({ error: 'Endpoint Not Found', status: 404 });
+});
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const distPath = path.join(__dirname, '../dist');

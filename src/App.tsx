@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type DependencyList, type ReactNode } from "react";
 import { fetchDashboardData } from "./services/uptime";
+import { NotFound } from "./NotFound";
 import type {
   PublicBotSnapshot,
   PublicFeatureStatus,
@@ -46,7 +47,22 @@ function App() {
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [error, setError] = useState(false);
   const [videoAvailable, setVideoAvailable] = useState(true);
+  const [currentPath, setCurrentPath] = useState(() => window.location.pathname);
   const requestInFlight = useRef(false);
+
+  useEffect(() => {
+    const onPop = () => setCurrentPath(window.location.pathname);
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
+
+  const isNotFound = currentPath !== "/" && currentPath !== "";
+  const navigateHome = useCallback(() => {
+    if (window.location.pathname !== "/") {
+      window.history.pushState({}, "", "/");
+    }
+    setCurrentPath("/");
+  }, []);
 
   const load = useCallback(async (silent = false) => {
     if (requestInFlight.current) return;
@@ -102,7 +118,12 @@ function App() {
 
       <main className="status-page">
         <header className="site-header glass-panel reveal-once">
-          <div className="brand" aria-label="Neko Studio Bot Status">
+          <div
+            className="brand"
+            aria-label="Neko Studio Bot Status"
+            onClick={navigateHome}
+            style={{ cursor: "pointer" }}
+          >
             <span className="brand-mark">NS</span>
             <div className="brand-text">
               <strong>Neko Studio</strong>
@@ -111,56 +132,70 @@ function App() {
           </div>
 
           <div className="header-actions">
-            <span className="updated-text">
-              {lastUpdated ? `Cập nhật ${formatRelative(lastUpdated)}` : "Đang cập nhật"}
-            </span>
-            <button className="refresh-btn" type="button" onClick={() => void load(true)} disabled={refreshing}>
-              {refreshing ? "Đang làm mới" : "Làm mới"}
-            </button>
+            {isNotFound ? (
+              <button className="refresh-btn" type="button" onClick={navigateHome}>
+                Về trang chủ
+              </button>
+            ) : (
+              <>
+                <span className="updated-text">
+                  {lastUpdated ? `Cập nhật ${formatRelative(lastUpdated)}` : "Đang cập nhật"}
+                </span>
+                <button className="refresh-btn" type="button" onClick={() => void load(true)} disabled={refreshing}>
+                  {refreshing ? "Đang làm mới" : "Làm mới"}
+                </button>
+              </>
+            )}
           </div>
         </header>
 
-        <section className={`overview ${summary.tone} glass-panel reveal-once`}>
-          <div className="overview-copy">
-            <span className="eyebrow">Trạng thái hệ thống</span>
-            <h1>{summary.title}</h1>
-            <p>{summary.description}</p>
-          </div>
-          <div className="overview-stats" aria-label="Tổng quan trạng thái bot">
-            <SummaryStat label="Bot hoạt động" value={`${summary.online}/${summary.total}`} />
-            <SummaryStat label="Uptime 24h" value={formatPercent(summary.averageUptime24h)} />
-            <SummaryStat label="Độ trễ TB" value={summary.averageLatencyMs === null ? "..." : `${summary.averageLatencyMs} ms`} />
-          </div>
-        </section>
-
-        {error && (
-          <section className="notice-card checking glass-panel reveal-once">
-            <strong>Không thể cập nhật trạng thái lúc này</strong>
-            <p>Dữ liệu sẽ tự làm mới sau ít phút. Trang vẫn giữ trạng thái gần nhất nếu có.</p>
-          </section>
-        )}
-
-        {loading ? (
-          <LoadingState />
+        {isNotFound ? (
+          <NotFound onGoHome={navigateHome} />
         ) : (
           <>
-            <section className="bot-section" aria-labelledby="bot-list-title">
-              <SectionHeader eyebrow="Dịch vụ" title="Bot Discord" meta={<BotSectionMeta count={bots.length} />} />
-              {bots.length ? (
-                <div className="bot-grid">
-                  {bots.map((bot) => (
-                    <BotStatusCard key={bot.endpoint.id} bot={bot} samples={history[bot.endpoint.id] || []} />
-                  ))}
-                </div>
-              ) : (
-                <EmptyState title="Chưa có bot để hiển thị" text="Dữ liệu trạng thái đang được khởi tạo." />
-              )}
+            <section className={`overview ${summary.tone} glass-panel reveal-once`}>
+              <div className="overview-copy">
+                <span className="eyebrow">Trạng thái hệ thống</span>
+                <h1>{summary.title}</h1>
+                <p>{summary.description}</p>
+              </div>
+              <div className="overview-stats" aria-label="Tổng quan trạng thái bot">
+                <SummaryStat label="Bot hoạt động" value={`${summary.online}/${summary.total}`} />
+                <SummaryStat label="Uptime 24h" value={formatPercent(summary.averageUptime24h)} />
+                <SummaryStat label="Độ trễ TB" value={summary.averageLatencyMs === null ? "..." : `${summary.averageLatencyMs} ms`} />
+              </div>
             </section>
 
-            <FeatureSection features={visibleFeatures} />
-            <IncidentSection incidents={incidents} bots={bots} />
+            {error && (
+              <section className="notice-card checking glass-panel reveal-once">
+                <strong>Không thể cập nhật trạng thái lúc này</strong>
+                <p>Dữ liệu sẽ tự làm mới sau ít phút. Trang vẫn giữ trạng thái gần nhất nếu có.</p>
+              </section>
+            )}
 
-            {SHOW_DEBUG && <DebugPanel bots={bots} features={visibleFeatures} incidents={incidents} />}
+            {loading ? (
+              <LoadingState />
+            ) : (
+              <>
+                <section className="bot-section" aria-labelledby="bot-list-title">
+                  <SectionHeader eyebrow="Dịch vụ" title="Bot Discord" meta={<BotSectionMeta count={bots.length} />} />
+                  {bots.length ? (
+                    <div className="bot-grid">
+                      {bots.map((bot) => (
+                        <BotStatusCard key={bot.endpoint.id} bot={bot} samples={history[bot.endpoint.id] || []} />
+                      ))}
+                    </div>
+                  ) : (
+                    <EmptyState title="Chưa có bot để hiển thị" text="Dữ liệu trạng thái đang được khởi tạo." />
+                  )}
+                </section>
+
+                <FeatureSection features={visibleFeatures} />
+                <IncidentSection incidents={incidents} bots={bots} />
+
+                {SHOW_DEBUG && <DebugPanel bots={bots} features={visibleFeatures} incidents={incidents} />}
+              </>
+            )}
           </>
         )}
       </main>
