@@ -78,6 +78,15 @@ const botEndpoints = botConfigs.map(({ id, label, url, token }) => ({ id, label,
 const botConfigById = new Map(botConfigs.map((bot) => [bot.id, bot]));
 
 const app = express();
+app.disable('x-powered-by');
+
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
+
 const publicCorsOrigin = process.env.PUBLIC_CORS_ORIGIN?.trim();
 const trustProxyHops = readPositiveIntEnv('TRUST_PROXY_HOPS', 0, true);
 if (trustProxyHops > 0) app.set('trust proxy', trustProxyHops);
