@@ -1,0 +1,58 @@
+{
+  "defaults": {
+    "latencySlowMs": 800,
+    "slowGraceMs": 9000,
+    "interruptionGraceMs": 30000,
+    "recoveringWindowMs": 900000
+  },
+  "bots": [
+    {
+      "id": "nekobot",
+      "label": "NekoBot",
+      "url": "http://127.0.0.1:25016/api/uptime/status",
+      "tokenEnv": "UPTIME_TOKEN_NEKOBOT",
+      "features": [
+        { "id": "utility", "label": "Lệnh tiện ích" },
+        { "id": "support", "label": "Ticket và tiếp tân" },
+        { "id": "economy", "label": "Kinh tế và điểm" },
+        { "id": "games", "label": "Pet và minigame" },
+        { "id": "social", "label": "Theo dõi TikTok" }
+      ]
+    },
+    {
+      "id": "nekobot-global",
+      "label": "NekoBot Global",
+      "url": "http://127.0.0.1:25921/api/uptime/status",
+      "tokenEnv": "UPTIME_TOKEN_NEKOBOT_GLOBAL",
+      "features": [
+        { "id": "server-management", "label": "Quản lý server" },
+        { "id": "moderation", "label": "Moderation" },
+        { "id": "welcome-stats", "label": "Welcome, stats và QR" },
+        { "id": "economy-games", "label": "Economy và minigame" },
+        { "id": "premium", "label": "Inventory và premium" }
+      ]
+    },
+    {
+      "id": "neko-nightfall",
+      "label": "Neko Nightfall",
+      "url": "http://127.0.0.1:25930/api/uptime/status",
+      "tokenEnv": "UPTIME_TOKEN_NEKO_NIGHTFALL",
+      "features": [
+        { "id": "werewolf-game", "label": "Game Ma Sói" },
+        { "id": "stats", "label": "Thống kê trận" },
+        { "id": "help", "label": "Trợ giúp" }
+      ]
+    },
+    {
+      "id": "auto-quest",
+      "label": "Auto quest",
+      "url": "http://127.0.0.1:25639/api/uptime/status",
+      "tokenEnv": "UPTIME_TOKEN_AUTO_QUEST",
+      "features": [
+        { "id": "quest", "label": "Quest tự động" },
+        { "id": "key-setup", "label": "Key và setup" },
+        { "id": "account-tasks", "label": "Tác vụ tài khoản" }
+      ]
+    }
+  ]
+}

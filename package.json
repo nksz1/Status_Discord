@@ -1,0 +1,52 @@
+{
+  "name": "neko-discord-uptime-dashboard",
+  "version": "0.1.0",
+  "description": "Public status and uptime dashboard for Discord bot services built with React 19, Express 5, and Vite.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nksz1/status_discord.git"
+  },
+  "keywords": [
+    "discord",
+    "bot-status",
+    "uptime-monitor",
+    "dashboard",
+    "react19",
+    "express5",
+    "vite"
+  ],
+  "private": true,
+  "type": "module",
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
+  },
+  "scripts": {
+    "dev:frontend": "vite --host 0.0.0.0",
+    "dev:backend": "tsx server/index.ts",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "start": "tsx server/index.ts",
+    "start:dev": "tsx server/index.ts"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^10.0.3",
+    "tsx": "^4.23.0",
+    "typescript": "^5.9.3",
+    "vite": "^6.0.7"
+  }
+}

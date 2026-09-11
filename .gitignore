@@ -1,0 +1,9 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.env
+.env.local
+data.db
+data.json
+public/Elaina.mp4
+.agents/
