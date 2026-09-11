@@ -226,3 +226,7 @@ Hệ thống được thiết kế theo nguyên tắc phòng vệ chuyên sâu (
    - Backend giới hạn kích thước phản hồi tối đa từ bot ở mức **64 KiB** và hủy yêu cầu (abort) sau **6 giây** timeout.
    - Từ chối mọi chuyển hướng HTTP (`redirect: "error"`).
    - Tích hợp bộ đếm tần suất truy cập theo địa chỉ IP (Rate Limiter) tại API công khai kèm theo HTTP header chuẩn (`X-RateLimit-*`, `Retry-After`).
+5. **Cấu hình Reverse Proxy an toàn (`TRUST_PROXY_HOPS`)**:
+   - Khi triển khai sau Reverse Proxy (như Cloudflare, Nginx, Docker Reverse Proxy), hãy đặt `TRUST_PROXY_HOPS=1` để Express nhận diện chính xác IP của từng client thực tế, tránh trường hợp tất cả client dùng chung IP của proxy và kích hoạt 429 hàng loạt.
+6. **Bảo vệ kênh truyền Upstream (HTTPS Recommendation)**:
+   - Nếu các bot upstream được lưu trữ trên các máy chủ khác nhau qua mạng Internet công cộng, khuyến nghị sử dụng giao thức `https://` cho URL của bot trong `bots.config.json` để mã hóa toàn bộ dữ liệu và Bearer token trên đường truyền.

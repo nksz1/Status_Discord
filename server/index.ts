@@ -422,7 +422,20 @@ function getDisplayName(snapshot: BotSnapshot, config: BotConfig) {
   return snapshot.serviceName || config.label || snapshot.bot.name || snapshot.endpoint.label;
 }
 
+let warnedUntrustedProxy = false;
+function checkUntrustedProxyWarning(req: Request) {
+  if (!warnedUntrustedProxy && trustProxyHops === 0 && req.headers['x-forwarded-for']) {
+    warnedUntrustedProxy = true;
+    console.warn(
+      '[SECURITY WARNING] Detected X-Forwarded-For header while TRUST_PROXY_HOPS is 0. ' +
+      'If this service is deployed behind a reverse proxy (Cloudflare/Nginx), set TRUST_PROXY_HOPS=1 ' +
+      'so client IPs are distinguished properly, avoiding global 429 rate-limiting.'
+    );
+  }
+}
+
 function enforcePublicStatusRateLimit(req: Request, res: Response, next: NextFunction) {
+  checkUntrustedProxyWarning(req);
   const now = Date.now();
   const key = req.ip || req.socket.remoteAddress || 'unknown';
   let bucket = publicStatusRateLimits.get(key);
